@@ -45,40 +45,64 @@ $drink[2]['name'] = "Zero";
 $drink[2]['price'] = 33;
 ?>
 <body>
-    <div class="container-">
-        <form action="index.php?page=form&action=save&name=ali" method="post">
+    <div class="container">
+
+        <?php if(isset($_GET['action'])): ?>
+            <?php if($_GET['action'] == 'preorder'): ?>
 
 
-            <div class="row">>
-                <?php foreach ($menu as $key => $item): ?>
-                    <div class="col-4">
-                        <div class="card">
-                            <img src="<?php echo $item['image']; ?>" class="card-img-top img-thumbnail" width="128px" height="128px">
-                            <div class="card-body">
-                                <h5 class="card-title"><?php echo $item['name']; ?></h5>
-                                <p class="card-text"><?php echo $item['price']; ?></p>
+                <form action="index.php?action=final" method="post">
 
-                                <input name="order[<?php echo $key; ?>]" type="number" value="0" class="form-control">
+                        <?php foreach ($menu as $key => $item): ?>
+
+                            <div class="d-flex flex-row border border-primary rounded mb-2">
+                                <img src="<?php echo $item['image']; ?>" class="rounded-circle" width="32" height="32">
+
+                                <h5 class="px-2"><?php echo $item['name']; ?></h5>
+                                <p class="px-2"><?php echo $item['price']; ?></p>
+
+                                <?php if(isset($_POST['order'][$key])) { ?>
+                                    <input class="px-2" name="order[<?php echo $key; ?>]" type="number" value="<?php echo $_POST['order'][$key]; ?>" class="form-control">
+                                <?php } else {?>
+                                    <input class="px-2" name="order[<?php echo $key; ?>]" type="number" value="0" class="form-control">
+                                <?php } ?>
+
                             </div>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-            <div class="mb-3">
-                <label for="exampleFormControlInput1" class="form-label">Email address</label>
-                <input type="email" name="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
-            </div>
+                        <?php endforeach; ?>
+                        <select class="form-select" name="table" aria-label="Default select example">
+                            <option value="1" <?php if($_GET['table'] == 1){ echo " selected";} ?>>One</option>
+                            <option value="2" <?php if($_GET['table'] == 2){ echo " selected";} ?>>Two</option>
+                            <option value="3" <?php if($_GET['table'] == 3){ echo " selected";} ?>>Three</option>
+                            <option value="4" <?php if($_GET['table'] == 4){ echo " selected";} ?>>Four</option>
+                        </select>
+                        <input type="submit" name="submit">
+                        <a href="index.php" class="btn btn-link">Reset</a>
+                    </form>
 
-            <input type="submit" name="submit">
-        </form>
+
+
+            <?php endif; ?>
+        <?php if($_GET['action'] == 'final'): ?>
+            <?php print $_POST['table']; ?>
+        <?php endif; ?>
+
+
+        <?php endif; ?>
+
+
 
         <?php
         $total = 0;
+        if(isset($_POST['submit'])){
+
+
         $order = $_POST['order'];
         ?>
 
         <ul>
             <?php foreach ($order as $key => $item): ?>
+
+            <?php if($item != 0): ?>
             <li>
                 <?php echo $menu[$key]['name']; ?>=>
                 <?php echo $menu[$key]['price']; ?>
@@ -88,11 +112,12 @@ $drink[2]['price'] = 33;
                 <?php echo $menu[$key]['price'] * $item; ?>
                 <?php $total += $menu[$key]['price'] * $item; ?>
             </li>
+                <?php endif; ?>
             <?php endforeach; ?>
         </ul>
 
         Total:<?php echo $total; ?>
-
+        <?php } ?>
 
         <h2>POST</h2>
         <?php foreach ($_POST as $key => $value) { ?>
